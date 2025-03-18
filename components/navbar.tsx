@@ -62,7 +62,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col relative z-999">
       {/* Full screen menu */}
       <div
         ref={menuRef}
