@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   try {
     // Hardcode the base URL for now - this is a temporary fix
     // In production, you'd want to use environment variables or request headers
-    const baseUrl = "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
     const body = await request.json();
     const { orderId, items, userId, shippingDetails } = body;
