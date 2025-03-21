@@ -322,7 +322,7 @@ export default function Footer() {
         particle.userData.rotation.x *= 1.2;
         particle.userData.rotation.z *= 1.2;
 
-        console.log("Top collision detected!");
+        // console.log("Top collision detected!");
       }
 
       // Check for collision with bottom of text
@@ -340,7 +340,7 @@ export default function Footer() {
         particle.userData.rotation.x *= 1.2;
         particle.userData.rotation.z *= 1.2;
 
-        console.log("Bottom collision detected!");
+        // console.log("Bottom collision detected!");
       }
 
       // Check for collision with left edge of text
@@ -357,7 +357,7 @@ export default function Footer() {
         // Increase rotation for visual effect
         particle.userData.rotation.y *= 1.2;
 
-        console.log("Left collision detected!");
+        // console.log("Left collision detected!");
       }
 
       // Check for collision with right edge of text
@@ -374,7 +374,7 @@ export default function Footer() {
         // Increase rotation for visual effect
         particle.userData.rotation.y *= 1.2;
 
-        console.log("Right collision detected!");
+        // console.log("Right collision detected!");
       }
 
       // Bounce off floor (bottom of screen)

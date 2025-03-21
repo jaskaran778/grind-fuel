@@ -12,40 +12,35 @@ const products = {
       name: "Energy Surge",
       description: "Electrolyte-packed energy drink",
       price: "$3.99",
-      image:
-        "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/drinks (1).png",
     },
     {
       id: 2,
       name: "Focus Flow",
       description: "Clean caffeine, zero crash",
       price: "$3.99",
-      image:
-        "https://images.unsplash.com/photo-1581006852262-e4307cf6283a?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/drinks (2).png",
     },
     {
       id: 3,
       name: "Hyper Hydrate",
       description: "Maximum hydration formula",
       price: "$4.29",
-      image:
-        "https://images.unsplash.com/photo-1625772299849-1e273a8f4b04?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/drinks (3).png",
     },
     {
       id: 4,
       name: "Power Punch",
       description: "Fruit blast with B vitamins",
       price: "$3.99",
-      image:
-        "https://images.unsplash.com/photo-1613478223719-2ab802602423?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/drinks (4).png",
     },
     {
       id: 5,
       name: "Night Mode",
       description: "Gaming energy, all night long",
       price: "$4.49",
-      image:
-        "https://images.unsplash.com/photo-1527281400683-1aefee6bfcli?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/drinks (5).png",
     },
   ],
   snacks: [
@@ -54,40 +49,35 @@ const products = {
       name: "Protein Bytes",
       description: "20g protein, low carb snack bites",
       price: "$5.99",
-      image:
-        "https://images.unsplash.com/photo-1607629234173-05c1c8a2b789?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/snacks (1).png",
     },
     {
       id: 7,
       name: "Focus Crunch",
       description: "Almond & dark chocolate protein bar",
       price: "$3.49",
-      image:
-        "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/snacks (2).png",
     },
     {
       id: 8,
       name: "Brain Fuel",
       description: "Nootropic-infused nut mix",
       price: "$4.99",
-      image:
-        "https://images.unsplash.com/photo-1599042127405-37c81d806ecf?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/snacks (3).png",
     },
     {
       id: 9,
       name: "Power Cookies",
       description: "Protein-packed gaming fuel",
       price: "$6.99",
-      image:
-        "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/snacks (4).png",
     },
     {
       id: 10,
       name: "Reaction Wafers",
       description: "Quick energy, great taste",
       price: "$4.49",
-      image:
-        "https://images.unsplash.com/photo-1584937603565-32e4ea94e888?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/snacks (5).png",
     },
   ],
   gums: [
@@ -96,40 +86,35 @@ const products = {
       name: "Focus Chew",
       description: "Caffeine + L-theanine gum",
       price: "$3.99",
-      image:
-        "https://images.unsplash.com/photo-1577870876601-a8ec9bae6c5e?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/gum (1).png",
     },
     {
       id: 12,
       name: "Reaction Boost",
       description: "Faster reaction time formula",
       price: "$4.29",
-      image:
-        "https://images.unsplash.com/photo-1603801024503-05987426d263?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/gum (2).png",
     },
     {
       id: 13,
       name: "Brain Blast",
       description: "Nootropic-infused focus gum",
       price: "$3.99",
-      image:
-        "https://images.unsplash.com/photo-1578844251478-cc6ebae2a161?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/gum (3).png",
     },
     {
       id: 14,
       name: "Mint Rush",
       description: "Refreshing energy kick",
       price: "$3.79",
-      image:
-        "https://images.unsplash.com/photo-1566150198411-860114b54493?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/gum (4).png",
     },
     {
       id: 15,
       name: "Power Chew",
       description: "Long-lasting energy release",
       price: "$4.49",
-      image:
-        "https://images.unsplash.com/photo-1575224524106-b85da9c3171c?q=80&w=400&h=600&auto=format&fit=crop",
+      image: "/images/grind-fuel products/gum (5).png",
     },
   ],
 };
@@ -140,6 +125,47 @@ export default function Featured() {
   const scrollContainerRef = useRef(null);
   const cardsRef = useRef([]);
   const sectionRef = useRef(null);
+
+  // Add to cart function
+  const addToCart = (product) => {
+    // Get current cart from localStorage
+    const currentCart = JSON.parse(
+      localStorage.getItem("grindFuelCart") || "[]"
+    );
+
+    // Check if product already exists in cart
+    const existingProductIndex = currentCart.findIndex(
+      (item) => item.id === product.id
+    );
+
+    // Convert price string to number if needed
+    const price =
+      typeof product.price === "number"
+        ? product.price
+        : parseFloat(product.price.replace("$", ""));
+
+    if (existingProductIndex >= 0) {
+      // Product exists, increase quantity
+      currentCart[existingProductIndex].quantity += 1;
+    } else {
+      // Product doesn't exist, add with quantity 1
+      currentCart.push({
+        ...product,
+        quantity: 1,
+        price: price,
+      });
+    }
+
+    // Save updated cart to localStorage
+    localStorage.setItem("grindFuelCart", JSON.stringify(currentCart));
+
+    // Trigger storage event for other components to update
+    window.dispatchEvent(new Event("storage"));
+
+    // Create a custom event to open the cart
+    const openCartEvent = new CustomEvent("openCart");
+    window.dispatchEvent(openCartEvent);
+  };
 
   // Reset refs array when category changes
   useEffect(() => {
@@ -279,16 +305,33 @@ export default function Featured() {
                       <h3 className="text-2xl font-bold text-white mt-4 font-heading">
                         {product.name}
                       </h3>
-                      <p className="text-gray-300 text-lg mt-2">
+                      <p className="text-gray-300 text-lg mt-2 mb-4">
                         {product.description}
                       </p>
+
+                      {/* Add to Cart Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          addToCart(product);
+                        }}
+                        className="bg-[#16db65] hover:bg-[#16db65]/90 text-black px-4 py-2 rounded-full font-medium transition-colors duration-300 cursor-pointer"
+                      >
+                        Add to Cart
+                      </button>
                     </div>
                   </div>
                   <div className="p-6 flex justify-between items-center bg-black">
                     <button className="text-[#16db65] hover:underline font-medium text-lg">
                       Details
                     </button>
-                    <button className="bg-[#16db65]/20 hover:bg-[#16db65]/30 border border-[#16db65] rounded-full p-3 transition-colors">
+                    <button
+                      className="bg-[#16db65]/20 hover:bg-[#16db65]/30 border border-[#16db65] rounded-full p-3 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click
+                        addToCart(product);
+                      }}
+                    >
                       <svg
                         className="w-6 h-6 text-[#16db65]"
                         fill="currentColor"

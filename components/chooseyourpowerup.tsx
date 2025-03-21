@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function ChooseYourPowerup() {
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-start bg-black py-16 mt-6">
@@ -15,11 +17,13 @@ export default function ChooseYourPowerup() {
         {/* Card 1 - Hydration Boost */}
         <div className="border-2 border-[#16db65] rounded-xl p-6 flex flex-col items-center hover:bg-[#16db65]/10 transition-all duration-300">
           <div className="overflow-hidden rounded-lg mb-4 w-full">
-            <img
-              src="/products/image (13)-photoroom.png"
-              alt="Hydration Boost"
-              className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700"
-            />
+            <Link href="/products">
+              <img
+                src="/products/image (13)-photoroom.png"
+                alt="Hydration Boost"
+                className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer  "
+              />
+            </Link>
           </div>
           <h2 className="text-2xl text-white font-heading mb-2">
             🥤 Hydration Boost
@@ -32,11 +36,13 @@ export default function ChooseYourPowerup() {
         {/* Card 2 - Game Fuel Snacks */}
         <div className="border-2 border-[#16db65] rounded-xl p-6 flex flex-col items-center hover:bg-[#16db65]/10 transition-all duration-300">
           <div className="overflow-hidden rounded-lg mb-4 w-full">
-            <img
-              src="/products/image (17)-photoroom.png"
-              alt="Game Fuel Snacks"
-              className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700"
-            />
+            <Link href="/products">
+              <img
+                src="/products/image (17)-photoroom.png"
+                alt="Game Fuel Snacks"
+                className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer"
+              />
+            </Link>
           </div>
           <h2 className="text-2xl text-white font-heading mb-2">
             🍪 Game Fuel Snacks
@@ -48,12 +54,14 @@ export default function ChooseYourPowerup() {
 
         {/* Card 3 - Quick-Boost Gum */}
         <div className="border-2 border-[#16db65] rounded-xl p-6 flex flex-col items-center hover:bg-[#16db65]/10 transition-all duration-300">
-          <div className="overflow-hidden rounded-lg mb-4 w-full ">
-            <img
-              src="/products/image (26)-photoroom.png"
-              alt="Quick-Boost Gum"
-              className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700"
-            />
+          <div className="overflow-hidden rounded-lg mb-4 w-full">
+            <Link href="/products">
+              <img
+                src="/products/image (26)-photoroom.png"
+                alt="Quick-Boost Gum"
+                className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer"
+              />
+            </Link>
           </div>
           <h2 className="text-2xl text-white font-heading mb-2">
             🟢 Quick-Boost Gum

@@ -1,6 +1,16 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
+import { createClient } from "@supabase/supabase-js";
+import AuthModal from "./AuthModal";
+import Image from "next/image";
+import { User } from "@supabase/supabase-js";
+import Link from "next/link";
+
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Define section type for type safety
 type Section = "home" | "about" | "products" | "policies" | "contact" | null;
@@ -11,6 +21,12 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLDivElement>(null);
   const line2Ref = useRef<HTMLDivElement>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const [showSignOut, setShowSignOut] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -52,6 +68,40 @@ export default function Navbar() {
     }
   }, [isOpen]);
 
+  // Check if user is logged in
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          setUser(session.user);
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    // Get initial user
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+    getUser();
+
+    // Get cart item count from localStorage
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem("grindFuelCart") || "[]");
+      setCartItemCount(cart.reduce((total, item) => total + item.quantity, 0));
+    };
+
+    updateCartCount();
+    window.addEventListener("storage", updateCartCount);
+
+    return () => {
+      authListener.subscription.unsubscribe();
+      window.removeEventListener("storage", updateCartCount);
+    };
+  }, []);
+
   // Handle section hover effects
   const handleSectionHover = (section: Section) => {
     setActiveSection(section);
@@ -59,6 +109,25 @@ export default function Navbar() {
 
   const handleSectionLeave = () => {
     setActiveSection(null);
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setShowSignOut(false);
+
+    // Clear cart if needed
+    localStorage.removeItem("grindFuelCart");
+  };
+
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
+
+  // Get initials from email
+  const getInitials = (email) => {
+    if (!email) return "?";
+    return email.charAt(0).toUpperCase();
   };
 
   return (
@@ -153,6 +222,7 @@ export default function Navbar() {
       </div>
 
       <nav className="fixed top-0 left-0 right-0 flex items-center justify-between p-8 z-20">
+        {/* Logo on the left */}
         <div className="flex items-center">
           <h1 className="text-2xl font-bold">
             <img
@@ -165,8 +235,10 @@ export default function Navbar() {
             />
           </h1>
         </div>
+
+        {/* Menu lines in the center */}
         <div
-          className="flex flex-col items-center relative z-20 cursor-pointer"
+          className="flex flex-col items-center relative z-20 cursor-pointer mx-auto"
           onClick={() => setIsOpen(!isOpen)}
           onMouseMove={(e) => {
             if (isOpen) return; // Don't move when menu is open
@@ -216,23 +288,87 @@ export default function Navbar() {
             className="w-12 h-0.5 bg-[#16db65] origin-center"
           ></div>
         </div>
-        <div className="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-[#16db65] cursor-pointer"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+
+        {/* User info and cart on the right */}
+        <div className="flex items-center space-x-4">
+          {/* User Circle with Initials */}
+          <div className="relative">
+            {user ? (
+              <div
+                className="relative"
+                onMouseEnter={() => setShowSignOut(true)}
+                onMouseLeave={() => setShowSignOut(false)}
+              >
+                <div className="w-10 h-10 rounded-full bg-[#16db65] flex items-center justify-center text-black font-bold cursor-pointer">
+                  {getInitials(user.email)}
+                </div>
+
+                {/* Sign Out Button - Shows on Hover */}
+                {showSignOut && (
+                  <div className="absolute right-0 mt-2 bg-gray-900 py-2 px-4 rounded-md shadow-lg z-50">
+                    <button
+                      onClick={handleSignOut}
+                      className="whitespace-nowrap text-white hover:text-[#16db65] transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          <button
+            onClick={() => {
+              console.log("Cart button clicked");
+              // Dispatch a custom event to toggle the cart
+              const toggleEvent = new CustomEvent("toggleCart");
+              window.dispatchEvent(toggleEvent);
+            }}
+            className="relative p-2 text-white"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-[#16db65]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+          </button>
         </div>
       </nav>
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={(user: User) => setUser(user)}
+      />
     </div>
   );
 }
