@@ -56,42 +56,57 @@ export default function Products() {
   }, []);
 
   // Cart functions
-  const addToCart = async (product) => {
-    const existingItem = cart.find((item) => item.id === product.id);
-    let newCart;
+  const addToCart = (product) => {
+    // Get current cart from localStorage
+    const currentCart = JSON.parse(
+      localStorage.getItem("grindFuelCart") || "[]"
+    );
 
-    if (existingItem) {
-      newCart = cart.map((item) =>
-        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-      );
+    // Check if product already exists in cart
+    const existingProductIndex = currentCart.findIndex(
+      (item) => item.id === product.id
+    );
+
+    // Convert price string to number if needed
+    const price =
+      typeof product.price === "number"
+        ? product.price
+        : parseFloat(product.price.toString().replace(/[^0-9.]/g, ""));
+
+    // Create full product object with all required data
+    const productWithData = {
+      ...product,
+      quantity: 1,
+      price: price,
+      image: product.image, // Make sure image is included
+    };
+
+    if (existingProductIndex >= 0) {
+      // Product exists, increase quantity
+      currentCart[existingProductIndex].quantity += 1;
     } else {
-      newCart = [...cart, { ...product, quantity: 1 }];
+      // Product doesn't exist, add with quantity 1
+      currentCart.push(productWithData);
     }
-
-    setCart(newCart);
-    setIsCartOpen(true);
 
     // Save to localStorage
-    localStorage.setItem("grindFuelCart", JSON.stringify(newCart));
+    localStorage.setItem("grindFuelCart", JSON.stringify(currentCart));
 
-    // Update cart in Supabase if user is logged in
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from("carts").upsert({
-        user_id: user.id,
-        products: newCart,
-        updated_at: new Date(),
-      });
-    }
+    // Show toast notification
+    window.dispatchEvent(
+      new CustomEvent("productAdded", {
+        detail: { product: productWithData },
+      })
+    );
 
-    // Cart animation
-    gsap.to(".cart-container", {
-      x: isCartOpen ? 0 : -400,
-      duration: 0.5,
-      ease: "power3.out",
-    });
+    // Open cart
+    window.dispatchEvent(new CustomEvent("openCart"));
+
+    // Force update other components
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
+
+    // Update local cart state
+    setCart(currentCart);
   };
 
   const filteredProducts = products.filter(
@@ -200,7 +215,7 @@ export default function Products() {
                   </div>
                   <button
                     onClick={() => addToCart(product)}
-                    className="w-full md:w-auto self-end bg-[#16db65] hover:bg-[#16db65]/90 text-black font-bold py-3 px-6 rounded-lg transition-all"
+                    className="w-full md:w-auto self-end bg-[#16db65] hover:bg-[#16db65]/90 text-black font-bold py-3 px-6 rounded-lg transition-all cursor-pointer"
                   >
                     Add to Cart
                   </button>

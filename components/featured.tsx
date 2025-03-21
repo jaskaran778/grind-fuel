@@ -142,29 +142,38 @@ export default function Featured() {
     const price =
       typeof product.price === "number"
         ? product.price
-        : parseFloat(product.price.replace("$", ""));
+        : parseFloat(product.price.replace(/[^0-9.]/g, ""));
+
+    // Create full product object with all required data
+    const productWithData = {
+      ...product,
+      quantity: 1,
+      price: price,
+    };
 
     if (existingProductIndex >= 0) {
       // Product exists, increase quantity
       currentCart[existingProductIndex].quantity += 1;
     } else {
       // Product doesn't exist, add with quantity 1
-      currentCart.push({
-        ...product,
-        quantity: 1,
-        price: price,
-      });
+      currentCart.push(productWithData);
     }
 
-    // Save updated cart to localStorage
+    // Save to localStorage
     localStorage.setItem("grindFuelCart", JSON.stringify(currentCart));
 
-    // Trigger storage event for other components to update
-    window.dispatchEvent(new Event("storage"));
+    // Show toast notification
+    window.dispatchEvent(
+      new CustomEvent("productAdded", {
+        detail: { product: productWithData },
+      })
+    );
 
-    // Create a custom event to open the cart
-    const openCartEvent = new CustomEvent("openCart");
-    window.dispatchEvent(openCartEvent);
+    // Open cart
+    window.dispatchEvent(new CustomEvent("openCart"));
+
+    // Force update other components
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
 
   // Reset refs array when category changes
@@ -307,6 +316,9 @@ export default function Featured() {
                       </h3>
                       <p className="text-gray-300 text-lg mt-2 mb-4">
                         {product.description}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        ₹{product.price.toString().replace("$", "")}
                       </p>
 
                       {/* Add to Cart Button */}

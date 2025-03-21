@@ -338,8 +338,6 @@ export default function Navbar() {
 
           <button
             onClick={() => {
-              console.log("Cart button clicked");
-              // Dispatch a custom event to toggle the cart
               const toggleEvent = new CustomEvent("toggleCart");
               window.dispatchEvent(toggleEvent);
             }}

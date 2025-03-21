@@ -14,73 +14,72 @@ export default function Cart() {
   const cartRef = useRef(null);
   const router = useRouter();
 
-  // Load cart items when component mounts
+  // Load cart items when component mounts or cart data changes
   useEffect(() => {
-    // Create a function to load cart items from localStorage
     const loadCartItems = () => {
-      console.log("Loading cart items");
-      const cart = JSON.parse(localStorage.getItem("grindFuelCart") || "[]");
-      setItems(cart);
+      try {
+        const cart = JSON.parse(localStorage.getItem("grindFuelCart") || "[]");
+        console.log("Loading cart items:", cart);
+        setItems(cart);
+      } catch (err) {
+        console.error("Error loading cart:", err);
+        setItems([]);
+      }
     };
 
     // Load items initially
     loadCartItems();
 
-    // Function to handle storage events (for when cart is updated)
-    const handleStorageUpdate = () => {
-      console.log("Storage updated");
-      loadCartItems();
-    };
-
-    // Function to toggle cart visibility
-    const toggleCart = (e) => {
+    // Handle direct cart toggle
+    const handleToggleCart = () => {
       console.log("Toggle cart event received");
-      globalCartOpen = !globalCartOpen;
-      setIsOpen(globalCartOpen);
+      setIsOpen((prev) => !prev);
     };
 
-    // Function to open cart
-    const openCart = () => {
+    // Handle open cart request
+    const handleOpenCart = () => {
       console.log("Open cart event received");
-      globalCartOpen = true;
       setIsOpen(true);
     };
 
-    // Add event listeners
-    window.addEventListener("storage", handleStorageUpdate);
-    window.addEventListener("toggleCart", toggleCart);
-    window.addEventListener("openCart", openCart);
+    // Handle cart storage updates
+    const handleStorageChange = () => {
+      console.log("Storage change detected");
+      loadCartItems();
+    };
 
-    // Clean up
+    // Add all event listeners
+    window.addEventListener("toggleCart", handleToggleCart);
+    window.addEventListener("openCart", handleOpenCart);
+    window.addEventListener("cartUpdated", handleStorageChange);
+
+    // On mount, check URL for 'cart=open' param to open cart
+    if (
+      typeof window !== "undefined" &&
+      window.location.search.includes("cart=open")
+    ) {
+      setIsOpen(true);
+    }
+
     return () => {
-      window.removeEventListener("storage", handleStorageUpdate);
-      window.removeEventListener("toggleCart", toggleCart);
-      window.removeEventListener("openCart", openCart);
+      window.removeEventListener("toggleCart", handleToggleCart);
+      window.removeEventListener("openCart", handleOpenCart);
+      window.removeEventListener("cartUpdated", handleStorageChange);
     };
   }, []);
 
-  // Handle cart animation
+  // Handle cart animation with CSS transitions
   useEffect(() => {
-    console.log("Cart isOpen state:", isOpen);
     if (cartRef.current) {
       if (isOpen) {
-        console.log("Opening cart with GSAP");
-        gsap.to(cartRef.current, {
-          x: 0,
-          duration: 0.3,
-          ease: "power2.out",
-        });
+        cartRef.current.style.transform = "translateX(0)";
       } else {
-        console.log("Closing cart with GSAP");
-        gsap.to(cartRef.current, {
-          x: "100%",
-          duration: 0.3,
-          ease: "power2.in",
-        });
+        cartRef.current.style.transform = "translateX(100%)";
       }
     }
   }, [isOpen]);
 
+  // Update quantity of an item
   const updateQuantity = (id, newQuantity) => {
     const updatedItems = items
       .map((item) =>
@@ -90,8 +89,19 @@ export default function Cart() {
 
     setItems(updatedItems);
     localStorage.setItem("grindFuelCart", JSON.stringify(updatedItems));
-    window.dispatchEvent(new Event("storage"));
+
+    // Dispatch custom event for cart updates
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
+
+  // Calculate total price
+  const totalPrice = items.reduce((sum, item) => {
+    const price =
+      typeof item.price === "number"
+        ? item.price
+        : parseFloat((item.price || "0").toString().replace(/[^0-9.]/g, ""));
+    return sum + price * item.quantity;
+  }, 0);
 
   const removeFromCart = async (productId) => {
     const newCart = items.filter((item) => item.id !== productId);
@@ -119,26 +129,18 @@ export default function Cart() {
     router.push("/checkout");
   };
 
-  const calculateTotal = () => {
-    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  };
-
   return (
     <div
       ref={cartRef}
-      className="fixed top-0 right-0 w-[350px] md:w-[400px] h-full bg-black border-l border-[#16db65]/30 z-50 transform translate-x-full shadow-2xl"
-      style={{ translateX: "100%" }}
+      className="fixed top-0 right-0 w-[350px] md:w-[400px] h-full bg-black border-l border-[#16db65]/30 z-50 shadow-2xl transition-transform duration-300 ease-in-out"
+      style={{ transform: "translateX(100%)" }}
     >
       <div className="h-full flex flex-col p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Your Cart</h2>
           <button
             className="text-white hover:text-[#16db65]"
-            onClick={() => {
-              console.log("Close button clicked");
-              setIsOpen(false);
-              globalCartOpen = false;
-            }}
+            onClick={() => setIsOpen(false)}
           >
             <svg
               className="w-6 h-6"
@@ -157,6 +159,7 @@ export default function Cart() {
           </button>
         </div>
 
+        {/* Cart items */}
         {items.length === 0 ? (
           <div className="flex-grow flex flex-col items-center justify-center">
             <svg
@@ -185,13 +188,15 @@ export default function Cart() {
                 >
                   <div className="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 bg-gray-800">
                     {item.image && (
-                      <div className="relative w-full h-full">
-                        <img
-                          src={item.image}
-                          alt={item.name || "Product image"}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                      <img
+                        src={item.image}
+                        alt={item.name || "Product image"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/placeholder.png";
+                          e.currentTarget.onerror = null;
+                        }}
+                      />
                     )}
                     {!item.image && (
                       <div className="w-full h-full bg-gray-700 flex items-center justify-center">
@@ -202,10 +207,15 @@ export default function Cart() {
                   <div className="ml-4 flex-grow">
                     <h3 className="text-white font-medium">{item.name}</h3>
                     <p className="text-gray-400 text-sm">
-                      $
-                      {typeof item.price === "number"
+                      ₹
+                      {(typeof item.price === "number"
                         ? item.price
-                        : parseFloat(item.price.replace("$", ""))}
+                        : parseFloat(
+                            (item.price || "0")
+                              .toString()
+                              .replace(/[^0-9.]/g, "")
+                          )
+                      ).toFixed(2)}
                     </p>
                     <div className="flex items-center mt-2">
                       <button
@@ -248,11 +258,16 @@ export default function Cart() {
                       </svg>
                     </button>
                     <span className="text-[#16db65] font-medium">
-                      $
-                      {(typeof item.price === "number"
-                        ? item.price
-                        : parseFloat(item.price.replace("$", ""))) *
-                        item.quantity}
+                      ₹
+                      {(
+                        (typeof item.price === "number"
+                          ? item.price
+                          : parseFloat(
+                              (item.price || "0")
+                                .toString()
+                                .replace(/[^0-9.]/g, "")
+                            )) * item.quantity
+                      ).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -262,7 +277,7 @@ export default function Cart() {
               <div className="flex justify-between mb-4">
                 <span className="text-gray-400">Subtotal</span>
                 <span className="text-white font-medium">
-                  ${calculateTotal().toFixed(2)}
+                  ₹{totalPrice.toFixed(2)}
                 </span>
               </div>
               <button
