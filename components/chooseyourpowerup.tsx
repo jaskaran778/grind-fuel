@@ -22,7 +22,7 @@ export default function ChooseYourPowerup() {
               <Image
                 width={1000}
                 height={1000}
-                src="/image (13)-photoroom.png"
+                src="/image (13)-Photoroom.png"
                 alt="Hydration Boost"
                 className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer  "
               />
@@ -43,7 +43,7 @@ export default function ChooseYourPowerup() {
               <Image
                 width={1000}
                 height={1000}
-                src="/image (17)-photoroom.png"
+                src="/image (17)-Photoroom.png"
                 alt="Game Fuel Snacks"
                 className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer"
               />
@@ -64,7 +64,7 @@ export default function ChooseYourPowerup() {
               <Image
                 width={1000}
                 height={1000}
-                src="/image (26)-photoroom.png"
+                src="/image (26)-Photoroom.png"
                 alt="Quick-Boost Gum"
                 className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer"
               />
