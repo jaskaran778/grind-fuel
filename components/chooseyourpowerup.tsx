@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function ChooseYourPowerup() {
@@ -18,7 +19,9 @@ export default function ChooseYourPowerup() {
         <div className="border-2 border-[#16db65] rounded-xl p-6 flex flex-col items-center hover:bg-[#16db65]/10 transition-all duration-300">
           <div className="overflow-hidden rounded-lg mb-4 w-full">
             <Link href="/products">
-              <img
+              <Image
+                width={1000}
+                height={1000}
                 src="/image (13)-photoroom.png"
                 alt="Hydration Boost"
                 className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer  "
@@ -37,7 +40,9 @@ export default function ChooseYourPowerup() {
         <div className="border-2 border-[#16db65] rounded-xl p-6 flex flex-col items-center hover:bg-[#16db65]/10 transition-all duration-300">
           <div className="overflow-hidden rounded-lg mb-4 w-full">
             <Link href="/products">
-              <img
+              <Image
+                width={1000}
+                height={1000}
                 src="/image (17)-photoroom.png"
                 alt="Game Fuel Snacks"
                 className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer"
@@ -56,7 +61,9 @@ export default function ChooseYourPowerup() {
         <div className="border-2 border-[#16db65] rounded-xl p-6 flex flex-col items-center hover:bg-[#16db65]/10 transition-all duration-300">
           <div className="overflow-hidden rounded-lg mb-4 w-full">
             <Link href="/products">
-              <img
+              <Image
+                width={1000}
+                height={1000}
                 src="/image (26)-photoroom.png"
                 alt="Quick-Boost Gum"
                 className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-700 cursor-pointer"
