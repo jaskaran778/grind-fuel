@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
+import { createClient } from "@supabase/supabase-js";
 // Create a global variable to handle cart state
 let globalCartOpen = false;
 
@@ -187,9 +187,9 @@ export default function Cart() {
                   className="flex border-b border-gray-800 pb-4"
                 >
                   <div className="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 bg-gray-800">
-                    {item.image && (
+                    {item.imageUrl && (
                       <img
-                        src={item.image}
+                        src={item.imageUrl}
                         alt={item.name || "Product image"}
                         className="w-full h-full object-cover"
                         onError={(e) => {
