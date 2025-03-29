@@ -18,11 +18,8 @@ import { useScroll } from "framer-motion";
 import { useEffect, useRef } from "react";
 import Lenis from "@studio-freight/lenis";
 import HolographicReviews from "@/components/HolographicReviews";
-import LocomotiveScroll from "locomotive-scroll";
 
 export default function Home() {
-  const locomotiveScroll = new LocomotiveScroll();
-
   return (
     <div className="overflow-x-hidden">
       <Navbar />
