@@ -132,7 +132,7 @@ export default function Cart() {
   return (
     <div
       ref={cartRef}
-      className="fixed top-0 right-0 w-[350px] md:w-[400px] h-full bg-black border-l border-[#16db65]/30 z-50 shadow-2xl transition-transform duration-300 ease-in-out"
+      className="fixed top-0 right-0 w-[350px] md:w-[400px] h-full bg-black border-l border-[#16db65]/30 z-103 shadow-2xl transition-transform duration-300 ease-in-out"
       style={{ transform: "translateX(100%)" }}
     >
       <div className="h-full flex flex-col p-6">
@@ -180,16 +180,16 @@ export default function Cart() {
           </div>
         ) : (
           <>
-            <div className="flex-grow overflow-y-auto space-y-4 mb-6">
+            <div className="flex-grow overflow-y-auto space-y-4 mb-6 scrollbar-hide">
               {items.map((item) => (
                 <div
                   key={item.id}
                   className="flex border-b border-gray-800 pb-4"
                 >
                   <div className="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 bg-gray-800">
-                    {item.imageUrl && (
+                    {item.image && (
                       <img
-                        src={item.imageUrl}
+                        src={item.image}
                         alt={item.name || "Product image"}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -208,14 +208,13 @@ export default function Cart() {
                     <h3 className="text-white font-medium">{item.name}</h3>
                     <p className="text-gray-400 text-sm">
                       ₹
-                      {(typeof item.price === "number"
+                      {typeof item.price === "number"
                         ? item.price
                         : parseFloat(
                             (item.price || "0")
                               .toString()
                               .replace(/[^0-9.]/g, "")
-                          )
-                      ).toFixed(2)}
+                          )}
                     </p>
                     <div className="flex items-center mt-2">
                       <button
@@ -259,15 +258,13 @@ export default function Cart() {
                     </button>
                     <span className="text-[#16db65] font-medium">
                       ₹
-                      {(
-                        (typeof item.price === "number"
-                          ? item.price
-                          : parseFloat(
-                              (item.price || "0")
-                                .toString()
-                                .replace(/[^0-9.]/g, "")
-                            )) * item.quantity
-                      ).toFixed(2)}
+                      {(typeof item.price === "number"
+                        ? item.price
+                        : parseFloat(
+                            (item.price || "0")
+                              .toString()
+                              .replace(/[^0-9.]/g, "")
+                          )) * item.quantity}
                     </span>
                   </div>
                 </div>
@@ -276,9 +273,7 @@ export default function Cart() {
             <div className="border-t border-gray-800 pt-4">
               <div className="flex justify-between mb-4">
                 <span className="text-gray-400">Subtotal</span>
-                <span className="text-white font-medium">
-                  ₹{totalPrice.toFixed(2)}
-                </span>
+                <span className="text-white font-medium">₹{totalPrice}</span>
               </div>
               <button
                 className="w-full bg-[#16db65] text-black py-3 rounded-md font-bold hover:bg-opacity-90 transition-colors"
@@ -290,6 +285,19 @@ export default function Cart() {
           </>
         )}
       </div>
+
+      <style jsx global>{`
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scrollbar-hide {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+      `}</style>
     </div>
   );
 }

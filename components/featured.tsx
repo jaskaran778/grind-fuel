@@ -11,36 +11,36 @@ const products = {
       id: 1,
       name: "Energy Surge",
       description: "Electrolyte-packed energy drink",
-      price: "$3.99",
-      image: "/images/grind-fuel products/drinks (1).png",
+      price: "₹249",
+      image: "/images/drinks (1).png",
     },
     {
       id: 2,
       name: "Focus Flow",
       description: "Clean caffeine, zero crash",
-      price: "$3.99",
-      image: "/images/grind-fuel products/drinks (2).png",
+      price: "₹249",
+      image: "/images/drinks (2).png",
     },
     {
       id: 3,
       name: "Hyper Hydrate",
       description: "Maximum hydration formula",
-      price: "$4.29",
-      image: "/images/grind-fuel products/drinks (3).png",
+      price: "₹299",
+      image: "/images/drinks (3).png",
     },
     {
       id: 4,
       name: "Power Punch",
       description: "Fruit blast with B vitamins",
-      price: "$3.99",
-      image: "/images/grind-fuel products/drinks (4).png",
+      price: "₹249",
+      image: "/images/drinks (4).png",
     },
     {
       id: 5,
       name: "Night Mode",
       description: "Gaming energy, all night long",
-      price: "$4.49",
-      image: "/images/grind-fuel products/drinks (5).png",
+      price: "₹349",
+      image: "/images/drinks (5).png",
     },
   ],
   snacks: [
@@ -48,36 +48,36 @@ const products = {
       id: 6,
       name: "Protein Bytes",
       description: "20g protein, low carb snack bites",
-      price: "$5.99",
-      image: "/images/grind-fuel products/snacks (1).png",
+      price: "₹399",
+      image: "/images/snacks (1).png",
     },
     {
       id: 7,
       name: "Focus Crunch",
       description: "Almond & dark chocolate protein bar",
-      price: "$3.49",
-      image: "/images/grind-fuel products/snacks (2).png",
+      price: "₹349",
+      image: "/images/snacks (2).png",
     },
     {
       id: 8,
       name: "Brain Fuel",
       description: "Nootropic-infused nut mix",
-      price: "$4.99",
-      image: "/images/grind-fuel products/snacks (3).png",
+      price: "₹499",
+      image: "/images/snacks (3).png",
     },
     {
       id: 9,
       name: "Power Cookies",
       description: "Protein-packed gaming fuel",
-      price: "$6.99",
-      image: "/images/grind-fuel products/snacks (4).png",
+      price: "₹449",
+      image: "/images/snacks (4).png",
     },
     {
       id: 10,
       name: "Reaction Wafers",
       description: "Quick energy, great taste",
-      price: "$4.49",
-      image: "/images/grind-fuel products/snacks (5).png",
+      price: "₹299",
+      image: "/images/snacks (5).png",
     },
   ],
   gums: [
@@ -85,36 +85,36 @@ const products = {
       id: 11,
       name: "Focus Chew",
       description: "Caffeine + L-theanine gum",
-      price: "$3.99",
-      image: "/images/grind-fuel products/gum (1).png",
+      price: "₹149",
+      image: "/images/gum (1).png",
     },
     {
       id: 12,
       name: "Reaction Boost",
       description: "Faster reaction time formula",
-      price: "$4.29",
-      image: "/images/grind-fuel products/gum (2).png",
+      price: "₹149",
+      image: "/images/gum (2).png",
     },
     {
       id: 13,
       name: "Brain Blast",
       description: "Nootropic-infused focus gum",
-      price: "$3.99",
-      image: "/images/grind-fuel products/gum (3).png",
+      price: "₹149",
+      image: "/images/gum (3).png",
     },
     {
       id: 14,
       name: "Mint Rush",
       description: "Refreshing energy kick",
-      price: "$3.79",
-      image: "/images/grind-fuel products/gum (4).png",
+      price: "₹149",
+      image: "/images/gum (4).png",
     },
     {
       id: 15,
       name: "Power Chew",
       description: "Long-lasting energy release",
-      price: "$4.49",
-      image: "/images/grind-fuel products/gum (5).png",
+      price: "₹199",
+      image: "/images/gum (5).png",
     },
   ],
 };
@@ -290,7 +290,7 @@ export default function Featured() {
 
           {/* Products Horizontal Scroll - Using GSAP animation instead of manual scroll */}
           <div className="overflow-hidden w-full">
-            <div ref={scrollContainerRef} className="flex gap-20 pl-20">
+            <div ref={scrollContainerRef} className="flex gap-20 pl-24">
               {products[activeCategory].map((product, index) => (
                 <div
                   key={product.id}
@@ -316,9 +316,6 @@ export default function Featured() {
                       </h3>
                       <p className="text-gray-300 text-lg mt-2 mb-4">
                         {product.description}
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        ₹{product.price.toString().replace("$", "")}
                       </p>
 
                       {/* Add to Cart Button */}

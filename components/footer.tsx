@@ -1,43 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Link from "next/link";
-import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Footer() {
   const footerRef = useRef<HTMLDivElement>(null);
   const contentLayerRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Three.js variables
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const particlesRef = useRef<THREE.Object3D[]>([]);
-  const textBoundsRef = useRef<{
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-  } | null>(null);
-  const frameIdRef = useRef<number | null>(null);
-  const orbModelRef = useRef<THREE.Group | null>(null);
-  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const grindRef = useRef<HTMLSpanElement>(null);
+  const fuelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    // Set initial positions for the text
+    if (grindRef.current && fuelRef.current) {
+      gsap.set(grindRef.current, { y: 200, opacity: 0 });
+      gsap.set(fuelRef.current, { y: -200, opacity: 0 });
+    }
+
     // Initialize ScrollTrigger for the footer content
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: footerRef.current,
         start: "top bottom",
         end: "top 50%",
-        scrub: 1,
+        scrub: false, // Changed to false to allow animations to complete naturally
+        once: true, // Ensure animation only happens once
       },
     });
 
@@ -48,410 +38,41 @@ export default function Footer() {
       { y: "0%", duration: 1, ease: "power2.out" }
     );
 
+    // Add text animations to the timeline
+    if (grindRef.current && fuelRef.current) {
+      tl.to(
+        grindRef.current,
+        {
+          y: 0,
+          opacity: 1,
+          duration: 3.5,
+          ease: "elastic.out",
+        },
+        "-=0.5" // Start slightly before previous animation finishes
+      );
+
+      tl.to(
+        fuelRef.current,
+        {
+          y: 0,
+          opacity: 1,
+          duration: 3.5,
+          ease: "elastic.out",
+        },
+        "-=2.7" // Overlap with Grind animation
+      );
+    }
+
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
-
-      // Clean up Three.js
-      if (frameIdRef.current) {
-        cancelAnimationFrame(frameIdRef.current);
-      }
-
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-      }
     };
   }, []);
-
-  // Set up Three.js scene
-  useEffect(() => {
-    if (!canvasRef.current || !headingRef.current) return;
-
-    // Initialize scene
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-    scene.background = null; // Transparent background
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    cameraRef.current = camera;
-    camera.position.z = 5;
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      alpha: true,
-      antialias: true,
-    });
-    rendererRef.current = renderer;
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    const pointLight = new THREE.PointLight(0x16db65, 2, 100);
-    pointLight.position.set(0, 5, 5);
-    scene.add(pointLight);
-
-    // Load the energy orb model
-    const loader = new GLTFLoader();
-    loader.load("/models/energy_orb.glb", (gltf) => {
-      orbModelRef.current = gltf.scene;
-
-      // Make the model emissive/glowy
-      gltf.scene.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          if (child.material) {
-            // Clone the material to avoid sharing
-            if (Array.isArray(child.material)) {
-              child.material = child.material.map((mat) => {
-                const newMat = mat.clone();
-                newMat.emissive = new THREE.Color(0x16db65);
-                newMat.emissiveIntensity = 0.7;
-                return newMat;
-              });
-            } else {
-              child.material = child.material.clone();
-              child.material.emissive = new THREE.Color(0x16db65);
-              child.material.emissiveIntensity = 0.7;
-            }
-          }
-        }
-      });
-
-      setModelsLoaded(true);
-
-      // Wait for the heading to be fully rendered then create particles
-      setTimeout(() => {
-        if (!headingRef.current) return;
-
-        // Get actual screen position of the heading element for collision detection
-        const headingRect = headingRef.current.getBoundingClientRect();
-        const canvasRect = canvasRef.current!.getBoundingClientRect();
-
-        // Calculate and store text boundaries (for Three.js space)
-        // Convert from pixel coordinates to normalized device coordinates (-1 to 1)
-        textBoundsRef.current = {
-          top:
-            -((headingRect.top - canvasRect.top) / canvasRect.height) * 2 + 1,
-          bottom:
-            -((headingRect.bottom - canvasRect.top) / canvasRect.height) * 2 +
-            1,
-          left:
-            ((headingRect.left - canvasRect.left) / canvasRect.width) * 2 - 1,
-          right:
-            ((headingRect.right - canvasRect.left) / canvasRect.width) * 2 - 1,
-        };
-
-        console.log("Text bounds:", textBoundsRef.current);
-
-        // Create particles with the loaded model
-        createParticles();
-
-        // Start animation loop
-        animate();
-      }, 500); // Wait for DOM to settle
-    });
-
-    // Handle window resize
-    const handleResize = () => {
-      if (!cameraRef.current || !rendererRef.current) return;
-
-      // Update camera
-      cameraRef.current.aspect = window.innerWidth / window.innerHeight;
-      cameraRef.current.updateProjectionMatrix();
-
-      // Update renderer
-      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
-
-      // Update text bounds
-      if (headingRef.current) {
-        const headingRect = headingRef.current.getBoundingClientRect();
-        const canvasRect = canvasRef.current!.getBoundingClientRect();
-
-        textBoundsRef.current = {
-          top:
-            -((headingRect.top - canvasRect.top) / canvasRect.height) * 2 + 1,
-          bottom:
-            -((headingRect.bottom - canvasRect.top) / canvasRect.height) * 2 +
-            1,
-          left:
-            ((headingRect.left - canvasRect.left) / canvasRect.width) * 2 - 1,
-          right:
-            ((headingRect.right - canvasRect.left) / canvasRect.width) * 2 - 1,
-        };
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-
-      // Clean up
-      if (frameIdRef.current) {
-        cancelAnimationFrame(frameIdRef.current);
-      }
-
-      particlesRef.current.forEach((particle) => {
-        if (particle.parent) {
-          particle.parent.remove(particle);
-        }
-      });
-
-      particlesRef.current = [];
-    };
-  }, []);
-
-  // Create particles from the loaded model
-  const createParticles = () => {
-    if (!orbModelRef.current || !sceneRef.current) return;
-
-    // Create multiple particles
-    for (let i = 0; i < 30; i++) {
-      // Clone the model for each particle
-      const particle = orbModelRef.current.clone();
-
-      // Scale down the model
-      const scale = 0.1 + Math.random() * 0.1; // Random scale between 0.1 and 0.2
-      particle.scale.set(scale, scale, scale);
-
-      // Random starting position (above the visible area)
-      particle.position.x = (Math.random() - 0.5) * 6;
-      particle.position.y = Math.random() * 5 + 3; // Start above
-      particle.position.z = (Math.random() - 0.5) * 2;
-
-      // Store velocity for animation
-      particle.userData.velocity = {
-        x: (Math.random() - 0.5) * 0.03,
-        y: -0.02 - Math.random() * 0.02, // Fall down
-        z: (Math.random() - 0.5) * 0.01,
-      };
-
-      // Store rotation speed
-      particle.userData.rotation = {
-        x: (Math.random() - 0.5) * 0.04,
-        y: (Math.random() - 0.5) * 0.04,
-        z: (Math.random() - 0.5) * 0.04,
-      };
-
-      // Randomize color variations
-      particle.traverse((child) => {
-        if (child instanceof THREE.Mesh && child.material) {
-          // Pick a color: green, orange, or white with green glow
-          const colorOptions = [
-            0x16db65, // Green
-            0xff4900, // Orange
-            0xffffff, // White (with green emissive)
-          ];
-          const colorIndex = Math.floor(Math.random() * colorOptions.length);
-
-          if (Array.isArray(child.material)) {
-            child.material.forEach((mat) => {
-              mat.color.setHex(colorOptions[colorIndex]);
-            });
-          } else {
-            child.material.color.setHex(colorOptions[colorIndex]);
-          }
-        }
-      });
-
-      // Store original y position for reset
-      particle.userData.originalY = particle.position.y;
-
-      // Add to scene
-      sceneRef.current.add(particle);
-      particlesRef.current.push(particle);
-    }
-  };
-
-  // Animation loop
-  const animate = () => {
-    if (
-      !sceneRef.current ||
-      !cameraRef.current ||
-      !rendererRef.current ||
-      !textBoundsRef.current
-    ) {
-      frameIdRef.current = requestAnimationFrame(animate);
-      return;
-    }
-
-    // Update particles
-    particlesRef.current.forEach((particle) => {
-      // Update position based on velocity
-      particle.position.x += particle.userData.velocity.x;
-      particle.position.y += particle.userData.velocity.y;
-      particle.position.z += particle.userData.velocity.z;
-
-      // Update rotation
-      particle.rotation.x += particle.userData.rotation.x;
-      particle.rotation.y += particle.userData.rotation.y;
-      particle.rotation.z += particle.userData.rotation.z;
-
-      // Collision with text
-      const { top, bottom, left, right } = textBoundsRef.current!;
-
-      // Calculate particle bounds in normalized coordinates
-      const particleX = particle.position.x;
-      const particleY = particle.position.y;
-      const particleSize = 0.2; // Approximate size of particle
-
-      // Check if particle is within the text bounds horizontally
-      const inHorizontalBounds =
-        particleX + particleSize > left && particleX - particleSize < right;
-
-      // Check for collision with top of text
-      if (
-        inHorizontalBounds &&
-        particleY - particleSize <= top &&
-        particleY + particleSize >= top &&
-        particle.userData.velocity.y < 0
-      ) {
-        // Bounce off top of text
-        particle.userData.velocity.y *= -0.7; // Bounce with energy loss
-        particle.userData.velocity.x += (Math.random() - 0.5) * 0.04; // Add some randomness
-
-        // Increase rotation for visual effect
-        particle.userData.rotation.x *= 1.2;
-        particle.userData.rotation.z *= 1.2;
-
-        // console.log("Top collision detected!");
-      }
-
-      // Check for collision with bottom of text
-      if (
-        inHorizontalBounds &&
-        particleY + particleSize >= bottom &&
-        particleY - particleSize <= bottom &&
-        particle.userData.velocity.y > 0
-      ) {
-        // Bounce off bottom of text
-        particle.userData.velocity.y *= -0.7;
-        particle.userData.velocity.x += (Math.random() - 0.5) * 0.04;
-
-        // Increase rotation for visual effect
-        particle.userData.rotation.x *= 1.2;
-        particle.userData.rotation.z *= 1.2;
-
-        // console.log("Bottom collision detected!");
-      }
-
-      // Check for collision with left edge of text
-      if (
-        particleY < top &&
-        particleY > bottom &&
-        particleX + particleSize >= left &&
-        particleX - particleSize <= left &&
-        particle.userData.velocity.x > 0
-      ) {
-        // Bounce off left edge
-        particle.userData.velocity.x *= -0.7;
-
-        // Increase rotation for visual effect
-        particle.userData.rotation.y *= 1.2;
-
-        // console.log("Left collision detected!");
-      }
-
-      // Check for collision with right edge of text
-      if (
-        particleY < top &&
-        particleY > bottom &&
-        particleX - particleSize <= right &&
-        particleX + particleSize >= right &&
-        particle.userData.velocity.x < 0
-      ) {
-        // Bounce off right edge
-        particle.userData.velocity.x *= -0.7;
-
-        // Increase rotation for visual effect
-        particle.userData.rotation.y *= 1.2;
-
-        // console.log("Right collision detected!");
-      }
-
-      // Bounce off floor (bottom of screen)
-      if (particle.position.y < -2) {
-        // Less elastic bounce on floor (more energy loss)
-        particle.userData.velocity.y *= -0.5;
-        particle.position.y = -2 + 0.01; // Prevent sticking to floor
-
-        // Dampen horizontal movement on floor collision
-        particle.userData.velocity.x *= 0.9;
-
-        // If particle is moving very slowly after bounce, give it a small boost
-        if (Math.abs(particle.userData.velocity.y) < 0.01) {
-          particle.userData.velocity.y -= 0.005;
-        }
-      }
-
-      // Bounce off walls (sides of screen)
-      if (particle.position.x < -5 || particle.position.x > 5) {
-        particle.userData.velocity.x *= -0.8;
-      }
-
-      // Apply gravity
-      particle.userData.velocity.y -= 0.001;
-
-      // Reset particle if it falls too far below or has very low energy
-      if (
-        particle.position.y < -10 ||
-        (Math.abs(particle.userData.velocity.y) < 0.003 &&
-          particle.position.y < -1.9)
-      ) {
-        particle.position.y = particle.userData.originalY;
-        particle.position.x = (Math.random() - 0.5) * 6;
-
-        // Reset velocity
-        particle.userData.velocity = {
-          x: (Math.random() - 0.5) * 0.03,
-          y: -0.02 - Math.random() * 0.02,
-          z: (Math.random() - 0.5) * 0.01,
-        };
-      }
-
-      // Fade based on y position
-      const opacity = 1 - Math.min(1, Math.max(0, -particle.position.y / 8));
-      particle.traverse((child) => {
-        if (child instanceof THREE.Mesh && child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach((mat) => {
-              mat.transparent = true;
-              mat.opacity = opacity;
-            });
-          } else {
-            child.material.transparent = true;
-            child.material.opacity = opacity;
-          }
-        }
-      });
-    });
-
-    // Render scene
-    rendererRef.current.render(sceneRef.current, cameraRef.current);
-
-    // Continue animation loop
-    frameIdRef.current = requestAnimationFrame(animate);
-  };
 
   return (
     <footer
       ref={footerRef}
       className="relative w-full h-screen overflow-hidden bg-gradient-to-br from-black via-black to-black"
     >
-      {/* Three.js Canvas (absolute positioned) */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 z-10 pointer-events-none"
-      />
-
       {/* Base layer */}
       <div className="absolute inset-0 bg-black/80 z-0"></div>
 
@@ -462,11 +83,14 @@ export default function Footer() {
       >
         {/* Top part with brand name */}
         <div className="flex-grow flex items-center justify-center">
-          <h1
-            ref={headingRef}
-            className="text-[18vw] font-extrabold text-[#16db65] leading-none tracking-tighter"
-          >
-            Grind-Fuel
+          <h1 className="text-[22vw] font-extrabold text-[#16db65] leading-none tracking-tighter whitespace-nowrap">
+            <span ref={grindRef} className="inline-block">
+              Grind
+            </span>
+            {/* <span className="inline-block">-</span> */}
+            <span ref={fuelRef} className="inline-block">
+              Fuel
+            </span>
           </h1>
         </div>
 
@@ -529,8 +153,8 @@ export default function Footer() {
 
           <div className="text-white/80">
             <h3 className="text-[#16db65] font-bold text-lg">LOCATION</h3>
-            <p>New York, NY</p>
-            <p>United States</p>
+            <p>GovindPuri , ND</p>
+            <p>India</p>
           </div>
 
           <div className="text-white/80 flex flex-col items-start md:items-end justify-start">
@@ -545,7 +169,7 @@ export default function Footer() {
               href="tel:+1234567890"
               className="hover:text-white transition-colors"
             >
-              +1 (234) 567-890
+              +91 9876543210
             </a>
           </div>
         </div>

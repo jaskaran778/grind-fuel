@@ -131,7 +131,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex flex-col relative z-999">
+    <div className="flex flex-col relative z-101">
       {/* Full screen menu */}
       <div
         ref={menuRef}
@@ -212,7 +212,7 @@ export default function Navbar() {
           </ul>
         </div>
 
-        <div className="w-1/2 flex items-center justify-center overflow-hidden bg-gray-900 relative">
+        <div className="w-1/2 flex items-center justify-center overflow-hidden bg-black relative">
           <img
             src="/logo/logo2.png"
             alt="Logo"
@@ -345,7 +345,7 @@ export default function Navbar() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-[#16db65]"
+              className="h-8 w-8 text-[#16db65] cursor-pointer"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

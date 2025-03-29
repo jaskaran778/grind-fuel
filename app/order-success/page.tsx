@@ -119,17 +119,25 @@ function OrderSuccessContent() {
                     </p>
                   </div>
                   <span className="font-bold text-[#16db65]">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ₹{item.price * item.quantity}
                   </span>
                 </div>
               ))}
             </div>
 
             <div className="border-t border-gray-800 pt-4 mb-8">
+              <div className="flex justify-between mb-2">
+                <span>Subtotal</span>
+                <span className="font-medium">₹{orderDetails.total}</span>
+              </div>
+              <div className="flex justify-between mb-4">
+                <span>Shipping</span>
+                <span className="font-medium">₹199</span>
+              </div>
               <div className="flex justify-between text-xl">
                 <span className="font-bold">Total</span>
                 <span className="font-bold text-[#16db65]">
-                  ${orderDetails.total.toFixed(2)}
+                  ₹{orderDetails.total + 199}
                 </span>
               </div>
             </div>

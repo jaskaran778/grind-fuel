@@ -52,7 +52,7 @@ export async function POST(request: Request) {
           // Remove images to avoid URL issues
           description: item.description || "",
         },
-        unit_amount: Math.round(item.price * 100), // Convert to cents/paise
+        unit_amount: Math.round(item.price * 100), // Convert to paise
       },
       quantity: item.quantity,
     }));
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
           name: "Shipping",
           description: "Standard shipping",
         },
-        unit_amount: 41500, // 415 INR
+        unit_amount: 19900, // 199 INR
       },
       quantity: 1,
     });

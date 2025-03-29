@@ -1,127 +1,127 @@
 export const products = [
     // Hydration Boost Series
     {
-        id: 'h1',
-        name: 'Cyber Charge',
+        id: '1',
+        name: "Energy Surge",
         category: 'hydration',
-        price: 3.99,
-        description: 'A citrus-based electrolyte-infused energy drink for marathon gaming sessions.',
-        imageUrl: '/images/drinks (1).png'
+        price: 249,
+        description: "Electrolyte-packed energy drink",
+        image: "/images/drinks (1).png"
     },
     {
-        id: 'h2',
-        name: 'Neon Surge',
+        id: '2',
+        name: "Focus Flow",
         category: 'hydration',
-        price: 3.99,
-        description: 'Berry-infused hydration with no sugar and zero crashes.',
-        imageUrl: '/images/drinks (2).png'
+        price: 249,
+        description: "Clean caffeine, zero crash",
+        image: "/images/drinks (2).png"
     },
     {
-        id: 'h3',
-        name: 'Nitro Cascade',
+        id: '3',
+        name: "Hyper Hydrate",
         category: 'hydration',
-        price: 4.49,
-        description: 'A caffeinated coconut-lime drink to keep you sharp.',
-        imageUrl: '/images/drinks (3).png'
+        price: 299,
+        description: "Maximum hydration formula",
+        image: "/images/drinks (3).png"
     },
     {
-        id: 'h4',
-        name: 'Polar Shock',
+        id: '4',
+        name: "Power Punch",
         category: 'hydration',
-        price: 3.99,
-        description: 'An icy mint hydration mix for those who like a chilling refresh.',
-        imageUrl: '/images/drinks (4).png'
+        price: 249,
+        description: "Fruit blast with B vitamins",
+        image: "/images/drinks (4).png"
     },
     {
-        id: 'h5',
-        name: 'Lunar Drive',
+        id: '5',
+        name: "Night Mode",
         category: 'hydration',
-        price: 4.99,
-        description: 'A nootropic-infused drink that enhances cognitive function.',
-        imageUrl: '/images/drinks (5).png'
+        price: 349,
+        description: "Gaming energy, all night long",
+        image: "/images/drinks (5).png"
     },
 
     // Game Fuel Snacks
     {
-        id: 's1',
-        name: 'Power Crunch Bites',
+        id: '6',
+        name: "Protein Bytes",
         category: 'snacks',
-        price: 5.99,
-        description: 'High-protein, low-carb crunchy snacks for sustained energy.',
-        imageUrl: '/images/snacks (1).png'
+        price: 399,
+        description: "20g protein, low carb snack bites",
+        image: "/images/snacks (1).png"
     },
     {
-        id: 's2',
-        name: 'Neural Charge Bars',
+        id: '7',
+        name: "Focus Crunch",
         category: 'snacks',
-        price: 4.49,
-        description: 'Chocolate-infused nootropic bars for extended focus.',
-        imageUrl: '/images/snacks (2).png'
+        price: 349,
+        description: "Almond & dark chocolate protein bar",
+        image: "/images/snacks (2).png"
     },
     {
-        id: 's3',
-        name: 'XP Boost Jerky',
+        id: '8',
+        name: "Brain Fuel",
         category: 'snacks',
-        price: 6.99,
-        description: 'Spicy beef jerky with added B12 for peak endurance.',
-        imageUrl: '/images/snacks (3).png'
+        price: 499,
+        description: "Nootropic-infused nut mix",
+        image: "/images/snacks (3).png"
     },
     {
-        id: 's4',
-        name: 'Turbo Trail Mix',
+        id: '9',
+        name: "Power Cookies",
         category: 'snacks',
-        price: 4.99,
-        description: 'A mix of nuts, dried fruits, and matcha-infused dark chocolate.',
-        imageUrl: '/images/snacks (4).png'
+        price: 449,
+        description: "Protein-packed gaming fuel",
+        image: "/images/snacks (4).png"
     },
     {
-        id: 's5',
-        name: 'Stealth Fuel Puffs',
+        id: '10',
+        name: "Reaction Wafers",
         category: 'snacks',
-        price: 3.99,
-        description: 'Air-puffed cheese & herb snack with a crunch that won\'t distract.',
-        imageUrl: '/images/snacks (5).png'
+        price: 299,
+        description: "Quick energy, great taste",
+        image: "/images/snacks (5).png"
     },
 
     // Quick-Boost Gum
     {
-        id: 'g1',
-        name: 'HyperMint Charge',
+        id: '11',
+        name: "Focus Chew",
         category: 'gum',
-        price: 2.49,
-        description: 'A cooling mint gum with natural caffeine for instant focus.',
-        imageUrl: '/images/gum (1).png'
+        price: 149,
+        description: "Caffeine + L-theanine gum",
+        image: "/images/gum (1).png"
     },
     {
-        id: 'g2',
-        name: 'Neon Burst Citrus',
+        id: '12',
+        name: "Reaction Boost",
         category: 'gum',
-        price: 2.49,
-        description: 'Zesty lemon-lime gum for an instant wake-up.',
-        imageUrl: '/images/gum (2).png'
+        price: 149,
+        description: "Faster reaction time formula",
+        image: "/images/gum (2).png"
     },
     {
-        id: 'g3',
-        name: 'Dark Mode Berry',
+        id: '13',
+        name: "Brain Blast",
         category: 'gum',
-        price: 2.49,
-        description: 'Mixed-berry gum that boosts mental alertness.',
-        imageUrl: '/images/gum (3).png'
+        price: 149,
+        description: "Nootropic-infused focus gum",
+        image: "/images/gum (3).png"
     },
     {
-        id: 'g4',
-        name: 'Stealth Mode Spearmint',
+        id: '14',
+        name: "Mint Rush",
         category: 'gum',
-        price: 2.49,
-        description: 'Sugar-free spearmint gum for fresh focus.',
-        imageUrl: '/images/gum (4).png'
+        price: 149,
+        description: "Refreshing energy kick",
+        image: "/images/gum (4).png"
     },
     {
-        id: 'g5',
-        name: 'Ultra Shock Grape',
+        id: '15',
+        name: "Power Chew",
         category: 'gum',
-        price: 2.99,
-        description: 'Tangy grape gum packed with B vitamins for endurance.',
-        imageUrl: '/images/gum (5).png'
+        price: 199,
+        description: "Long-lasting energy release",
+        image: "/images/gum (5).png"
     },
 ]; 

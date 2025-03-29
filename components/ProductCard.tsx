@@ -42,7 +42,7 @@ export default function ProductCard({ product, onAddToCart }) {
     >
       <div className="h-48 relative overflow-hidden">
         <Image
-          src={product.imageUrl}
+          src={product.image}
           alt={product.name}
           fill
           className="object-cover"
@@ -54,7 +54,7 @@ export default function ProductCard({ product, onAddToCart }) {
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-bold text-[#16db65]">{product.name}</h3>
           <span className="bg-[#16db65] text-black px-2 py-1 rounded-full text-sm font-bold">
-            ${product.price.toFixed(2)}
+            ₹{product.price}
           </span>
         </div>
         <p className="text-gray-300 mb-4 text-sm">{product.description}</p>

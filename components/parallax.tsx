@@ -7,19 +7,34 @@ import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
 
 const images = [
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
-  "/navbar/nav (5).jpg",
+  "/images/drinks (1).png",
+  "/images/snacks (1).png",
+  "/images/gum (1).png",
+  "/images/drinks (4).png",
+  "/images/snacks (2).png",
+  "/images/gum (2).png",
+  "/images/drinks (5).png",
+  "/images/snacks (3).png",
+  "/images/gum (3).png",
+  "/images/snacks (5).png",
+  "/images/gum (4).png",
+  "/images/snacks (4).png",
+  "/images/gum (5).png",
 ];
+// const images = [
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+//   "/navbar/nav (5).jpg",
+// ];
 
 export default function Home() {
   const gallery = useRef(null);
@@ -60,6 +75,9 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.spacer}></div>
+      <div className={styles.heading}>
+        <h2>What Our Customers Say</h2>
+      </div>
       <div ref={gallery} className={styles.gallery}>
         <div className={styles.galleryWrapper}>
           <Column images={[images[0], images[1], images[2]]} y={y} />

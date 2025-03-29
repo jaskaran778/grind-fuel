@@ -97,7 +97,6 @@ export default function Checkout() {
           orderId: orderData.id,
           items: cart.map((item) => ({
             ...item,
-            price: item.price * 83, // Convert to rupees
           })),
           userId: user.id,
           shippingDetails: shippingDetails,
@@ -137,7 +136,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white mt-10">
       <Navbar />
 
       <div className="container mx-auto py-16 px-4">
@@ -286,7 +285,7 @@ export default function Checkout() {
                     </p>
                   </div>
                   <span className="font-bold text-[#16db65]">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ₹{item.price * item.quantity}
                   </span>
                 </div>
               ))}
@@ -295,24 +294,20 @@ export default function Checkout() {
             <div className="pt-4 border-t border-gray-800">
               <div className="flex justify-between mb-2">
                 <span>Subtotal</span>
-                <span className="font-medium">
-                  ${calculateTotal().toFixed(2)}
-                </span>
+                <span className="font-medium">₹{calculateTotal()}</span>
               </div>
               <div className="flex justify-between mb-2">
                 <span>Shipping</span>
-                <span className="font-medium">$5.00</span>
+                <span className="font-medium">₹199</span>
               </div>
-              <div className="flex justify-between mb-6">
+              {/* <div className="flex justify-between mb-6">
                 <span>Tax (8%)</span>
-                <span className="font-medium">
-                  ${(calculateTotal() * 0.08).toFixed(2)}
-                </span>
-              </div>
+                <span className="font-medium">₹{calculateTotal() * 0.08}</span>
+              </div> */}
               <div className="flex justify-between text-xl">
                 <span className="font-bold">Total</span>
                 <span className="font-bold text-[#16db65]">
-                  ${(calculateTotal() + 5 + calculateTotal() * 0.08).toFixed(2)}
+                  ₹{calculateTotal() + 199}
                 </span>
               </div>
             </div>
