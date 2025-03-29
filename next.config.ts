@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  builds: {
+    config: {
+      installCommand: "npm install --legacy-peer-deps",
+    },
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
