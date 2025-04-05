@@ -26,7 +26,10 @@ export default function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
-  const [showSignOut, setShowSignOut] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -74,8 +77,12 @@ export default function Navbar() {
       (event, session) => {
         if (session?.user) {
           setUser(session.user);
+          // Check if user is admin
+          const ADMIN_USER_ID = "48310edf-ea76-4109-9b32-e7700002e4ca";
+          setIsAdmin(session.user.id === ADMIN_USER_ID);
         } else {
           setUser(null);
+          setIsAdmin(false);
         }
       }
     );
@@ -84,13 +91,21 @@ export default function Navbar() {
     const getUser = async () => {
       const { data } = await supabase.auth.getUser();
       setUser(data.user);
+
+      // Check if user is admin
+      if (data.user) {
+        const ADMIN_USER_ID = "48310edf-ea76-4109-9b32-e7700002e4ca";
+        setIsAdmin(data.user.id === ADMIN_USER_ID);
+      }
     };
     getUser();
 
     // Get cart item count from localStorage
     const updateCartCount = () => {
       const cart = JSON.parse(localStorage.getItem("grindFuelCart") || "[]");
-      setCartItemCount(cart.reduce((total, item) => total + item.quantity, 0));
+      setCartItemCount(
+        cart.reduce((total: number, item: any) => total + item.quantity, 0)
+      );
     };
 
     updateCartCount();
@@ -114,10 +129,30 @@ export default function Navbar() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    setShowSignOut(false);
+    setShowUserMenu(false);
 
     // Clear cart if needed
     localStorage.removeItem("grindFuelCart");
+  };
+
+  // Handle mouse enter for user menu
+  const handleUserMenuEnter = () => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+      dropdownTimeoutRef.current = null;
+    }
+    setShowUserMenu(true);
+  };
+
+  // Handle mouse leave for user menu with delay
+  const handleUserMenuLeave = () => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+    }
+
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setShowUserMenu(false);
+    }, 300); // 300ms delay before hiding
   };
 
   const toggleCart = () => {
@@ -125,7 +160,7 @@ export default function Navbar() {
   };
 
   // Get initials from email
-  const getInitials = (email) => {
+  const getInitials = (email: string | undefined) => {
     if (!email) return "?";
     return email.charAt(0).toUpperCase();
   };
@@ -296,19 +331,44 @@ export default function Navbar() {
             {user ? (
               <div
                 className="relative"
-                onMouseEnter={() => setShowSignOut(true)}
-                onMouseLeave={() => setShowSignOut(false)}
+                ref={dropdownRef}
+                onMouseEnter={handleUserMenuEnter}
+                onMouseLeave={handleUserMenuLeave}
               >
                 <div className="w-10 h-10 rounded-full bg-[#16db65] flex items-center justify-center text-black font-bold cursor-pointer">
                   {getInitials(user.email)}
                 </div>
 
-                {/* Sign Out Button - Shows on Hover */}
-                {showSignOut && (
-                  <div className="absolute right-0 mt-2 bg-gray-900 py-2 px-4 rounded-md shadow-lg z-50">
+                {/* User Menu Dropdown - Shows on Hover */}
+                {showUserMenu && (
+                  <div
+                    className="absolute right-0 mt-2 bg-gray-900 py-3 px-4 rounded-md shadow-lg z-50 w-40 border border-gray-800"
+                    onMouseEnter={handleUserMenuEnter}
+                    onMouseLeave={handleUserMenuLeave}
+                  >
+                    <Link
+                      href="/profile"
+                      className="block whitespace-nowrap text-white hover:text-[#16db65] transition-colors mb-3"
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      href="/notifications"
+                      className="block whitespace-nowrap text-white hover:text-[#16db65] transition-colors mb-3"
+                    >
+                      Notifications
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="block whitespace-nowrap text-white hover:text-[#16db65] transition-colors mb-3"
+                      >
+                        Admin Panel
+                      </Link>
+                    )}
                     <button
                       onClick={handleSignOut}
-                      className="whitespace-nowrap text-white hover:text-[#16db65] transition-colors"
+                      className="block w-full text-left whitespace-nowrap text-white hover:text-[#16db65] transition-colors"
                     >
                       Sign Out
                     </button>
