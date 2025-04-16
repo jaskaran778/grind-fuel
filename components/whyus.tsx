@@ -412,7 +412,7 @@ export default function WhyUs() {
         </div>
 
         {/* What's Inside - Hover to reveal */}
-        <div ref={addFeatureRef} className="mb-20">
+        {/* <div ref={addFeatureRef} className="mb-20">
           <h2 className="text-4xl font-bold mb-14 font-heading text-center text-[#16db65]">
             🔬 WHAT'S INSIDE?
           </h2>
@@ -453,7 +453,7 @@ export default function WhyUs() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* CTA Section - KEEPING THE SAME AS REQUESTED */}
         <div ref={addFeatureRef} className="text-center">

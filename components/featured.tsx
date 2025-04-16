@@ -304,7 +304,7 @@ export default function Featured() {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black to-transparent opacity-70"></div>
                     <div className="absolute bottom-0 left-0 w-full p-6">
