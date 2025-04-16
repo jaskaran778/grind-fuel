@@ -2,9 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { gsap } from "gsap";
-import { createClient } from "@supabase/supabase-js";
 import Navbar from "@/components/navbar";
-import Cart from "@/components/Cart";
 import { products } from "@/data/products";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tilt } from "react-tilt";
@@ -12,10 +10,16 @@ import { X } from "lucide-react";
 import { Draggable } from "gsap/Draggable";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Define product interface
+interface Product {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  description: string;
+  image: string;
+  quantity?: number;
+}
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -24,13 +28,13 @@ if (typeof window !== "undefined") {
 
 export default function Products() {
   const [activeCategory, setActiveCategory] = useState("hydration");
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState<Product[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [hoveredProduct, setHoveredProduct] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const heroRef = useRef(null);
   const gridRef = useRef(null);
-  const productRefs = useRef([]);
+  const productRefs = useRef<any[]>([]);
   const sidebarRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isGlitching, setIsGlitching] = useState(false);
@@ -182,7 +186,7 @@ export default function Products() {
   }, []);
 
   // Cart functions
-  const addToCart = (product) => {
+  const addToCart = (product: Product) => {
     // Get current cart from localStorage
     const currentCart = JSON.parse(
       localStorage.getItem("grindFuelCart") || "[]"
@@ -190,14 +194,11 @@ export default function Products() {
 
     // Check if product already exists in cart
     const existingProductIndex = currentCart.findIndex(
-      (item) => item.id === product.id
+      (item: Product) => item.id === product.id
     );
 
     // Convert price string to number if needed
-    const price =
-      typeof product.price === "number"
-        ? product.price
-        : parseFloat(product.price.toString().replace(/[^0-9.]/g, ""));
+    const price = product.price;
 
     // Create full product object with all required data
     const productWithData = {
@@ -302,13 +303,12 @@ export default function Products() {
   };
 
   // When you open the product details
-  const openProductDetails = (productId) => {
+  const openProductDetails = (productId: string) => {
     // Find the product in the products array
     const product = products.find((p) => p.id === productId);
 
     if (product) {
       setSelectedProduct(product);
-      setShowProductDetails(true);
     }
   };
 
@@ -644,15 +644,6 @@ export default function Products() {
           </div>
         )}
       </AnimatePresence>
-
-      {/* Cart Component */}
-      {/* <Cart
-        cart={cart}
-        setCart={setCart}
-        isOpen={isCartOpen}
-        setIsOpen={setIsCartOpen}
-        supabase={supabase}
-      /> */}
 
       {/* Styles for the data stream effect */}
       <style jsx global>{`

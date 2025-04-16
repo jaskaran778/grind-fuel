@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import localFont from "next/font/local";
-import Cart from "@/components/Cart";
 import Toast from "@/components/Toast";
 
 const geistSans = Geist({
@@ -48,7 +47,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${customFont1.variable} ${customFont2.variable} antialiased`}
       >
         {children}
-        <Cart />
         <Toast />
       </body>
     </html>

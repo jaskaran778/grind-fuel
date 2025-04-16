@@ -35,6 +35,19 @@ export default function ProductCard({ product, onAddToCart }) {
     };
   }, []);
 
+  const handleAddToCart = () => {
+    // Dispatch the productAdded event directly
+    const event = new CustomEvent("productAdded", {
+      detail: { product },
+    });
+    window.dispatchEvent(event);
+
+    // Call the onAddToCart callback if provided
+    if (onAddToCart) {
+      onAddToCart();
+    }
+  };
+
   return (
     <div
       ref={cardRef}
@@ -59,7 +72,7 @@ export default function ProductCard({ product, onAddToCart }) {
         </div>
         <p className="text-gray-300 mb-4 text-sm">{product.description}</p>
         <button
-          onClick={onAddToCart}
+          onClick={handleAddToCart}
           className="w-full bg-[#16db65] hover:bg-[#16db65] text-black font-bold py-2 px-4 rounded-lg transition-all"
         >
           Add to Cart

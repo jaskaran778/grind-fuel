@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/navbar";
-import emailjs from "@emailjs/browser";
 import Footer from "@/components/footer";
+
+// Define types for form fields
+type FieldName = "name" | "email" | "message" | null;
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -16,9 +18,9 @@ export default function Contact() {
   const [error, setError] = useState("");
   const [scanline, setScanline] = useState(false);
   const [glitchText, setGlitchText] = useState(false);
-  const [currentField, setCurrentField] = useState(null);
+  const [currentField, setCurrentField] = useState<FieldName>(null);
   const [cursorBlink, setCursorBlink] = useState(true);
-  const messageRef = useRef(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
 
   // Glitch effect for header
   useEffect(() => {
@@ -52,37 +54,30 @@ export default function Contact() {
     }
   }, [formData.message]);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     // Add terminal typing sound effect here if desired
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    try {
-      await emailjs.send(
-        "service_u3nmvh6",
-        "template_yfbmg7k",
-        {
-          from_name: formData.name,
-          reply_to: formData.email,
-          message: formData.message,
-        },
-        "4ZtP-Uczf3b30PJNl"
-      );
-
-      setSubmitted(true);
-      setFormData({ name: "", email: "", message: "" });
-    } catch (err) {
-      console.error("Failed to send email:", err);
-      setError("ERROR: TRANSMISSION FAILED. RETRY SEQUENCE INITIATED.");
-    } finally {
+    // Simulate form submission with a delay
+    setTimeout(() => {
+      // 5% chance of simulated error for realism
+      if (Math.random() < 0.05) {
+        setError("ERROR: TRANSMISSION FAILED. RETRY SEQUENCE INITIATED.");
+      } else {
+        setSubmitted(true);
+        setFormData({ name: "", email: "", message: "" });
+      }
       setLoading(false);
-    }
+    }, 1200); // Simulate network delay
   };
 
   return (

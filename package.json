@@ -9,10 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
-    "@stripe/stripe-js": "^6.1.0",
     "@studio-freight/lenis": "^1.0.42",
-    "@supabase/supabase-js": "^2.49.1",
     "@types/three": "^0.174.0",
     "framer-motion": "^12.6.2",
     "gsap": "^3.12.7",
@@ -24,7 +21,6 @@
     "react-spring": "^9.7.5",
     "react-tilt": "^1.0.2",
     "sass": "^1.86.0",
-    "stripe": "^17.7.0",
     "three": "^0.174.0"
   },
   "devDependencies": {

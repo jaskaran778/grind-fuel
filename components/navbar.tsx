@@ -1,16 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
-import { createClient } from "@supabase/supabase-js";
-import AuthModal from "./AuthModal";
-import Image from "next/image";
-import { User } from "@supabase/supabase-js";
 import Link from "next/link";
-
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Define section type for type safety
 type Section = "home" | "about" | "products" | "policies" | "contact" | null;
@@ -21,15 +12,7 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLDivElement>(null);
   const line2Ref = useRef<HTMLDivElement>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -71,36 +54,8 @@ export default function Navbar() {
     }
   }, [isOpen]);
 
-  // Check if user is logged in
+  // Handle cart counts from localStorage
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session?.user) {
-          setUser(session.user);
-          // Check if user is admin
-          const ADMIN_USER_ID = "48310edf-ea76-4109-9b32-e7700002e4ca";
-          setIsAdmin(session.user.id === ADMIN_USER_ID);
-        } else {
-          setUser(null);
-          setIsAdmin(false);
-        }
-      }
-    );
-
-    // Get initial user
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-
-      // Check if user is admin
-      if (data.user) {
-        const ADMIN_USER_ID = "48310edf-ea76-4109-9b32-e7700002e4ca";
-        setIsAdmin(data.user.id === ADMIN_USER_ID);
-      }
-    };
-    getUser();
-
-    // Get cart item count from localStorage
     const updateCartCount = () => {
       const cart = JSON.parse(localStorage.getItem("grindFuelCart") || "[]");
       setCartItemCount(
@@ -110,10 +65,11 @@ export default function Navbar() {
 
     updateCartCount();
     window.addEventListener("storage", updateCartCount);
+    window.addEventListener("cartUpdated", updateCartCount);
 
     return () => {
-      authListener.subscription.unsubscribe();
       window.removeEventListener("storage", updateCartCount);
+      window.removeEventListener("cartUpdated", updateCartCount);
     };
   }, []);
 
@@ -124,45 +80,6 @@ export default function Navbar() {
 
   const handleSectionLeave = () => {
     setActiveSection(null);
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setShowUserMenu(false);
-
-    // Clear cart if needed
-    localStorage.removeItem("grindFuelCart");
-  };
-
-  // Handle mouse enter for user menu
-  const handleUserMenuEnter = () => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
-      dropdownTimeoutRef.current = null;
-    }
-    setShowUserMenu(true);
-  };
-
-  // Handle mouse leave for user menu with delay
-  const handleUserMenuLeave = () => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
-    }
-
-    dropdownTimeoutRef.current = setTimeout(() => {
-      setShowUserMenu(false);
-    }, 300); // 300ms delay before hiding
-  };
-
-  const toggleCart = () => {
-    setIsCartOpen(!isCartOpen);
-  };
-
-  // Get initials from email
-  const getInitials = (email: string | undefined) => {
-    if (!email) return "?";
-    return email.charAt(0).toUpperCase();
   };
 
   return (
@@ -216,7 +133,7 @@ export default function Navbar() {
             >
               Products
             </li>
-            <li
+            {/* <li
               className={`w-full text-center transition-colors duration-500 cursor-pointer ${
                 activeSection && activeSection !== "policies"
                   ? "text-gray-600"
@@ -229,7 +146,7 @@ export default function Navbar() {
               }}
             >
               Policies
-            </li>
+            </li> */}
             <li
               className={`w-full text-center transition-colors duration-500 cursor-pointer ${
                 activeSection && activeSection !== "contact"
@@ -324,78 +241,8 @@ export default function Navbar() {
           ></div>
         </div>
 
-        {/* User info and cart on the right */}
-        <div className="flex items-center space-x-4">
-          {/* User Circle with Initials */}
-          <div className="relative">
-            {user ? (
-              <div
-                className="relative"
-                ref={dropdownRef}
-                onMouseEnter={handleUserMenuEnter}
-                onMouseLeave={handleUserMenuLeave}
-              >
-                <div className="w-10 h-10 rounded-full bg-[#16db65] flex items-center justify-center text-black font-bold cursor-pointer">
-                  {getInitials(user.email)}
-                </div>
-
-                {/* User Menu Dropdown - Shows on Hover */}
-                {showUserMenu && (
-                  <div
-                    className="absolute right-0 mt-2 bg-gray-900 py-3 px-4 rounded-md shadow-lg z-50 w-40 border border-gray-800"
-                    onMouseEnter={handleUserMenuEnter}
-                    onMouseLeave={handleUserMenuLeave}
-                  >
-                    <Link
-                      href="/profile"
-                      className="block whitespace-nowrap text-white hover:text-[#16db65] transition-colors mb-3"
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      href="/notifications"
-                      className="block whitespace-nowrap text-white hover:text-[#16db65] transition-colors mb-3"
-                    >
-                      Notifications
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        className="block whitespace-nowrap text-white hover:text-[#16db65] transition-colors mb-3"
-                      >
-                        Admin Panel
-                      </Link>
-                    )}
-                    <button
-                      onClick={handleSignOut}
-                      className="block w-full text-left whitespace-nowrap text-white hover:text-[#16db65] transition-colors"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-
+        {/* Cart button only */}
+        <div className="flex items-center">
           <button
             onClick={() => {
               const toggleEvent = new CustomEvent("toggleCart");
@@ -420,13 +267,6 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
-
-      {/* Authentication Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onSuccess={(user: User) => setUser(user)}
-      />
     </div>
   );
 }
